@@ -1,0 +1,10 @@
+{
+  "login": {
+    "title": "Prijava",
+    "emailPlaceholder": "E-pošta",
+    "passwordPlaceholder": "Lozinka",
+    "loginButton": "Prijavi se",
+    "loggingIn": "Prijavljivanje...",
+    "loginFailed": "Prijava nije uspjela"
+  }
+}

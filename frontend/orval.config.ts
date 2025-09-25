@@ -4,6 +4,7 @@ export default {
       client: "react-query",
       server: "http://localhost:3000",
       target: "./src/api/client.ts",
+      tsconfig: "./tsconfig.json",
       mock: true,
       override: {
         mutator: {

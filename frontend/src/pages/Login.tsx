@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePostApiAuthLogin } from "../api/client";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 
 const Login = () => {
+  const { t } = useTranslation("translation");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -10,7 +13,6 @@ const Login = () => {
   const { mutate, isPending, isError } = usePostApiAuthLogin({
     mutation: {
       onSuccess: (data) => {
-        // Save tokens
         localStorage.setItem("accessToken", data.accessToken ?? "");
         localStorage.setItem("refreshToken", data.refreshToken ?? "");
         navigate("/dashboard");
@@ -28,40 +30,26 @@ const Login = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          width: "300px",
-        }}
-      >
-        <h2>Login</h2>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <h2>{t("login.title")}</h2>
+        <LanguageSwitcher />
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t("login.emailPlaceholder")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t("login.passwordPlaceholder")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit" disabled={isPending}>
-          {isPending ? "Logging in..." : "Login"}
+          {isPending ? t("login.loggingIn") : t("login.loginButton")}
         </button>
-        {isError && <p style={{ color: "red" }}>Login failed</p>}
+        {isError && <p>{t("login.loginFailed")}</p>}
       </form>
     </div>
   );

@@ -1,7 +1,7 @@
 import Axios, { type AxiosRequestConfig } from "axios";
 
 export const AXIOS_INSTANCE = Axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env.VITE_BASE_URL,
 });
 
 // Add a request interceptor to attach token

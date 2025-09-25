@@ -22,8 +22,6 @@ const Dashboard = () => {
     localStorage.removeItem("refreshToken");
   };
 
-  console.log("User data:", data);
-
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Failed to load user</p>;
 
