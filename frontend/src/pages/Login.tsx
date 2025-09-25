@@ -1,10 +1,20 @@
-import { Heading } from '@/shared/components/Heading';
+import { Button } from '@/shared/components/ui/button';
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle
+} from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { usePostApiAuthLogin } from '../shared/api/client';
-import { LanguageSwitcher } from '../shared/components/LanguageSwitcher';
 
 const Login = () => {
 	const { t } = useTranslation('translation');
@@ -32,26 +42,56 @@ const Login = () => {
 	};
 
 	return (
-		<div>
-			<form onSubmit={handleSubmit}>
-				<Heading size="h2">{t('login.title')}</Heading>
-				<LanguageSwitcher />
-				<input
-					type="email"
-					placeholder={t('login.emailPlaceholder')}
-					value={email}
-					onChange={e => setEmail(e.target.value)}
-				/>
-				<input
-					type="password"
-					placeholder={t('login.passwordPlaceholder')}
-					value={password}
-					onChange={e => setPassword(e.target.value)}
-				/>
-				<button type="submit" disabled={isPending}>
-					{isPending ? t('login.loggingIn') : t('login.loginButton')}
-				</button>
-				{isError && <p>{t('login.loginFailed')}</p>}
+		<div className="flex min-h-screen flex-col items-center justify-center bg-blue-300 p-4">
+			<form onSubmit={handleSubmit} className="w-full max-w-md">
+				<Card className="mx-auto w-full max-w-md">
+					<CardHeader>
+						<CardTitle>Login to your account</CardTitle>
+						<CardDescription>
+							Enter your email below to login to your account
+						</CardDescription>
+						<CardAction>
+							<Button variant="link">Sign Up</Button>
+						</CardAction>
+					</CardHeader>
+					<CardContent>
+						<div className="flex flex-col gap-6">
+							<div className="grid gap-2">
+								<Label htmlFor="email">Email</Label>
+								<Input
+									id="email"
+									type="email"
+									onChange={e => setEmail(e.target.value)}
+									placeholder="m@example.com"
+									required
+								/>
+							</div>
+							<div className="grid gap-2">
+								<div className="flex items-center">
+									<Label htmlFor="password">Password</Label>
+									<a
+										href="#"
+										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+									>
+										Forgot your password?
+									</a>
+								</div>
+								<Input
+									id="password"
+									type="password"
+									onChange={e => setPassword(e.target.value)}
+									required
+								/>
+								{isError && <p>{t('login.loginFailed')}</p>}
+							</div>
+						</div>
+					</CardContent>
+					<CardFooter className="flex-col gap-2">
+						<Button type="submit" className="w-full">
+							{isPending ? t('login.loggingIn') : t('login.loginButton')}
+						</Button>
+					</CardFooter>
+				</Card>
 			</form>
 		</div>
 	);
