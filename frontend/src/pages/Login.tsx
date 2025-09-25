@@ -1,30 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { login, type LoginRequest } from "../api/auth";
+import { usePostApiAuthLogin } from "../api/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const { mutate, isPending, isError } = useMutation({
-    mutationFn: (data: LoginRequest) => login(data),
-    onSuccess: (data) => {
-      // Save tokens
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      navigate("/dashboard");
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      alert(error.response?.data?.message || "Login failed");
+  const { mutate, isPending, isError } = usePostApiAuthLogin({
+    mutation: {
+      onSuccess: (data) => {
+        // Save tokens
+        localStorage.setItem("accessToken", data.accessToken ?? "");
+        localStorage.setItem("refreshToken", data.refreshToken ?? "");
+        navigate("/dashboard");
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (error: any) => {
+        alert(error.response?.data?.message || "Login failed");
+      },
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({ email, password });
+    mutate({ data: { email, password } });
   };
 
   return (

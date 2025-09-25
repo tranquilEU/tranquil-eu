@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
+const yaml = require("yaml");
 
 const app = express();
 app.use(express.json());
@@ -224,6 +225,7 @@ app.post("/api/auth/login", async (req, res) => {
 
     const user = result.rows[0];
     const valid = await bcrypt.compare(password, user.password_hash);
+
     if (!valid) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -340,6 +342,12 @@ app.get("/api/me", authMiddleware, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
+});
+
+// Serve the Swagger JSON file
+app.get("/docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
 });
 
 app.listen(PORT, () => {

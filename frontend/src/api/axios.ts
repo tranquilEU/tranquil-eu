@@ -1,15 +1,34 @@
-import axios from "axios";
+import Axios, { type AxiosRequestConfig } from "axios";
 
-const instance = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
+export const AXIOS_INSTANCE = Axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+}); // use your own URL here or environment variable
 
-instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Add a request interceptor to attach token
+AXIOS_INSTANCE.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken"); // or however you store it
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-export default instance;
+export const axios = <T>(config: AxiosRequestConfig): Promise<T> => {
+  const source = Axios.CancelToken.source();
+
+  const promise = AXIOS_INSTANCE({ ...config, cancelToken: source.token }).then(
+    ({ data }) => data
+  );
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+
+  promise.cancel = () => {
+    source.cancel("Query was cancelled");
+  };
+
+  return promise;
+};
