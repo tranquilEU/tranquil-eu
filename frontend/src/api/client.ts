@@ -62,6 +62,16 @@ export interface MeResponse {
 
 export interface ErrorResponse {
   message?: string;
+  error?: string;
+}
+
+export interface LogoutRequest {
+  /** The refresh token to invalidate */
+  refreshToken: string;
+}
+
+export interface LogoutResponse {
+  message?: string;
 }
 
 export type PostApiAuthRefresh200 = {
@@ -264,6 +274,71 @@ export const usePostApiAuthRefresh = <TError = ErrorResponse | ErrorResponse,
     }
     
 /**
+ * @summary Logout user and invalidate refresh token
+ */
+export const postApiAuthLogout = (
+    logoutRequest: LogoutRequest,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axios<LogoutResponse>(
+      {url: `/api/auth/logout`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: logoutRequest, signal
+    },
+      );
+    }
+  
+
+
+export const getPostApiAuthLogoutMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,{data: LogoutRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,{data: LogoutRequest}, TContext> => {
+
+const mutationKey = ['postApiAuthLogout'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthLogout>>, {data: LogoutRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthLogout(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthLogout>>>
+    export type PostApiAuthLogoutMutationBody = LogoutRequest
+    export type PostApiAuthLogoutMutationError = ErrorResponse
+
+    /**
+ * @summary Logout user and invalidate refresh token
+ */
+export const usePostApiAuthLogout = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,{data: LogoutRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthLogout>>,
+        TError,
+        {data: LogoutRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiAuthLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
  * @summary Get current user profile
  */
 export const getApiMe = (
@@ -355,6 +430,8 @@ export const getPostApiAuthLoginResponseMock = (overrideResponse: Partial< Token
 
 export const getPostApiAuthRefreshResponseMock = (overrideResponse: Partial< PostApiAuthRefresh200 > = {}): PostApiAuthRefresh200 => ({accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
+export const getPostApiAuthLogoutResponseMock = (overrideResponse: Partial< LogoutResponse > = {}): LogoutResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+
 export const getGetApiMeResponseMock = (overrideResponse: Partial< MeResponse > = {}): MeResponse => ({id: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
 
@@ -394,6 +471,18 @@ export const getPostApiAuthRefreshMockHandler = (overrideResponse?: PostApiAuthR
   })
 }
 
+export const getPostApiAuthLogoutMockHandler = (overrideResponse?: LogoutResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<LogoutResponse> | LogoutResponse)) => {
+  return http.post('*/api/auth/logout', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostApiAuthLogoutResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  })
+}
+
 export const getGetApiMeMockHandler = (overrideResponse?: MeResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeResponse> | MeResponse)) => {
   return http.get('*/api/me', async (info) => {await delay(1000);
   
@@ -409,5 +498,6 @@ export const getLoginAPIMock = () => [
   getPostApiAuthRegisterMockHandler(),
   getPostApiAuthLoginMockHandler(),
   getPostApiAuthRefreshMockHandler(),
+  getPostApiAuthLogoutMockHandler(),
   getGetApiMeMockHandler()
 ]

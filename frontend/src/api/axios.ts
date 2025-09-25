@@ -1,13 +1,13 @@
 import Axios, { type AxiosRequestConfig } from "axios";
 
 export const AXIOS_INSTANCE = Axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-}); // use your own URL here or environment variable
+  baseURL: "http://localhost:3000",
+});
 
 // Add a request interceptor to attach token
 AXIOS_INSTANCE.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken"); // or however you store it
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

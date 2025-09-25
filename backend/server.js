@@ -235,10 +235,14 @@ app.post("/api/auth/login", async (req, res) => {
       JWT_SECRET,
       { expiresIn: "15m" }
     );
-    const refreshToken = jwt.sign(
-      { sub: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "7d" }
+
+    const refreshToken = generateRefreshToken({
+      sub: user.id,
+      email: user.email,
+    });
+    await pool.query(
+      "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + interval '7 days')",
+      [user.id, refreshToken]
     );
 
     res.json({ accessToken, refreshToken });
@@ -283,21 +287,112 @@ app.post("/api/auth/login", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-app.post("/api/auth/refresh", (req, res) => {
+app.post("/api/auth/refresh", async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken)
     return res.status(400).json({ message: "refreshToken is required" });
+
   try {
     const decoded = jwt.verify(refreshToken, JWT_SECRET);
+
+    // Check DB
+    const result = await pool.query(
+      "SELECT * FROM refresh_tokens WHERE token=$1 AND user_id=$2 AND expires_at > NOW()",
+      [refreshToken, decoded.sub]
+    );
+    if (result.rows.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "Invalid or expired refresh token" });
+    }
+
+    // Generate new access token
     const accessToken = generateAccessToken({
       sub: decoded.sub,
       email: decoded.email,
     });
-    return res.json({ accessToken });
-  } catch {
+    res.json({ accessToken });
+  } catch (err) {
     return res
       .status(401)
       .json({ message: "Invalid or expired refresh token" });
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user and invalidate refresh token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LogoutRequest'
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LogoutResponse'
+ *       400:
+ *         description: Refresh token is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LogoutRequest:
+ *       type: object
+ *       required:
+ *         - refreshToken
+ *       properties:
+ *         refreshToken:
+ *           type: string
+ *           description: The refresh token to invalidate
+ *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *
+ *     LogoutResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           example: Logged out
+ *
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           example: Refresh token is required
+ */
+
+app.post("/api/auth/logout", async (req, res) => {
+  const { refreshToken } = req.body;
+
+  // Validate input
+  if (!refreshToken) {
+    return res.status(400).json({ error: "Refresh token is required" });
+  }
+
+  try {
+    // Delete token from DB
+    await pool.query("DELETE FROM refresh_tokens WHERE token=$1", [
+      refreshToken,
+    ]);
+
+    return res.json({ message: "Logged out" });
+  } catch (err) {
+    console.error("Logout error:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
