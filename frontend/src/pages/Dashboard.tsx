@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useGetApiMe, usePostApiAuthLogout } from "../api/client";
+import { useGetApiMe, usePostApiAuthLogout } from "../shared/api/client";
 
 const Dashboard = () => {
   const navigate = useNavigate();

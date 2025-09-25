@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePostApiAuthLogin } from "../api/client";
+import { usePostApiAuthLogin } from "../shared/api/client";
 import { useTranslation } from "react-i18next";
-import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { LanguageSwitcher } from "../shared/components/LanguageSwitcher";
 
 const Login = () => {
   const { t } = useTranslation("translation");
