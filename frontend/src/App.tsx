@@ -7,6 +7,7 @@ import ProtectedRoute from './shared/components/ProtectedRoute';
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
@@ -17,6 +18,8 @@ function App() {
 				<Route path={ROUTES.Home} element={<Home />} />
 				<Route path={ROUTES.Login} element={<Login />} />
 				<Route path={ROUTES.SignUp} element={<SignUp />} />
+
+				<Route path={ROUTES.ResetPasswordLink} element={<ResetPassword />} />
 				<Route path={ROUTES.ForgotPassword} element={<ForgotPassword />} />
 				<Route
 					path={ROUTES.Dashboard}

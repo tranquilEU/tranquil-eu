@@ -25,5 +25,23 @@
     "alreadyHaveAccount": "Već imate račun? Prijava",
     "description": "Unesite podatke ispod da biste se registrirali",
     "registrationSuccessful": "Registracija uspjela"
+  },
+  "forgotPassword": {
+    "title": "Zaboravili ste lozinku?",
+    "description": "Unesite svoju e-poštu u nastavku i poslat ćemo vam poveznicu za resetiranje lozinke.",
+    "backToLogin": "Povratak na prijavu",
+    "emailSent": "Ako vaša e-pošta postoji, poslana je poveznica za resetiranje.",
+    "errorResponse": "Greška prilikom slanja poveznice za resetiranje.",
+    "submitButton": "Pošaljite poveznicu za resetiranje"
+  },
+  "resetPassword": {
+    "title": "Resetirajte svoju lozinku",
+    "description": "Unesite novu lozinku u nastavku da biste resetirali svoju lozinku.",
+    "backToLogin": "Povratak na prijavu",
+    "success": "Lozinka je uspješno resetirana.",
+    "errorResponse": "Greška prilikom resetiranja lozinke.",
+    "confirmPassword": "Potvrdi lozinku",
+    "passwordMismatch": "Lozinke se ne podudaraju.",
+    "submitButton": "Resetiraj lozinku"
   }
 }

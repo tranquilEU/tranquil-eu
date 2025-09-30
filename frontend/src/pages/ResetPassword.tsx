@@ -1,3 +1,4 @@
+import { usePostApiAuthResetPassword } from '@/shared/api/client';
 import { Paragraph } from '@/shared/components/Paragraph';
 import { Spinner } from '@/shared/components/Spinner';
 import { Button } from '@/shared/components/ui/button';
@@ -14,47 +15,42 @@ import { Input } from '@/shared/components/ui/input';
 import { ROUTES } from '@/shared/constants';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { usePostApiAuthRegister } from '../shared/api/client';
-
-const SignUp = () => {
-	const navigate = useNavigate();
+const ResetPassword = () => {
 	const { t } = useTranslation('translation');
+	const { token } = useParams<{ token: string }>();
+	const navigate = useNavigate();
 
-	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-	const { mutate, isPending, isError } = usePostApiAuthRegister({
-		mutation: {
-			onSuccess: data => {
-				localStorage.setItem('accessToken', data.accessToken ?? '');
-				localStorage.setItem('refreshToken', data.refreshToken ?? '');
-				navigate(ROUTES.Dashboard);
-				toast.success(t('signUp.registrationSuccessful'));
-			},
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			onError: (error: any) => {
-				setErrorMessage(error.response?.data?.message);
-			}
-		}
-	});
+	const { mutateAsync: resetPassword, isPending } =
+		usePostApiAuthResetPassword();
 
-	const handleLoginRedirect = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		navigate(ROUTES.Login);
-	};
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (password !== confirmPassword) {
-			setErrorMessage(t('signUp.passwordMismatch'));
+		if (!token) {
+			toast.error(t('resetPassword.errorResponse'));
 			return;
 		}
-		mutate({ data: { email, password } });
+		if (password !== confirmPassword) {
+			setErrorMessage(t('resetPassword.passwordMismatch'));
+			return;
+		}
+		try {
+			const res = await resetPassword({ data: { token, password } });
+			if (res.status === 'success') {
+				toast.success(t('resetPassword.success'));
+				navigate(ROUTES.Login);
+			} else {
+				toast.error(t('resetPassword.errorResponse'));
+			}
+		} catch {
+			toast.error(t('resetPassword.errorResponse'));
+		}
 	};
 
 	return (
@@ -62,31 +58,22 @@ const SignUp = () => {
 			<form onSubmit={handleSubmit} className="w-full max-w-md">
 				<Card className="mx-auto w-full max-w-md">
 					<CardHeader>
-						<CardTitle>{t('signUp.title')}</CardTitle>
-						<CardDescription>{t('signUp.description')}</CardDescription>
+						<CardTitle>{t('resetPassword.title')}</CardTitle>
+						<CardDescription>{t('resetPassword.description')}</CardDescription>
 						<CardAction>
-							<Button variant="link" onClick={handleLoginRedirect}>
-								{t('signUp.alreadyHaveAccount')}
+							<Button variant="link" onClick={() => navigate(ROUTES.Login)}>
+								{t('resetPassword.backToLogin')}
 							</Button>
 						</CardAction>
 					</CardHeader>
 					<CardContent>
 						<div className="flex flex-col gap-6">
 							<div className="grid gap-2">
-								<Paragraph htmlFor="email">{t('common.email')}</Paragraph>
-								<Input
-									id="email"
-									type="email"
-									onChange={e => setEmail(e.target.value)}
-									placeholder={t('common.emailPlaceholder')}
-									required
-								/>
-							</div>
-							<div className="grid gap-2">
 								<Paragraph htmlFor="password">{t('common.password')}</Paragraph>
 								<Input
 									id="password"
 									type="password"
+									value={password}
 									onChange={e => setPassword(e.target.value)}
 									placeholder={t('common.passwordPlaceholder')}
 									required
@@ -94,29 +81,25 @@ const SignUp = () => {
 							</div>
 							<div className="grid gap-2">
 								<Paragraph htmlFor="confirmPassword">
-									{t('signUp.confirmPassword')}
+									{t('resetPassword.confirmPassword')}
 								</Paragraph>
 								<Input
 									id="confirmPassword"
 									type="password"
-									placeholder={t('common.passwordPlaceholder')}
+									value={confirmPassword}
 									onChange={e => setConfirmPassword(e.target.value)}
+									placeholder={t('common.passwordPlaceholder')}
 									required
 								/>
-								{password !== confirmPassword && confirmPassword.length > 0 && (
+								{errorMessage && (
 									<Paragraph type="error">{errorMessage}</Paragraph>
-								)}
-								{isError && (
-									<Paragraph type="error">
-										{errorMessage || t('signUp.signUpFailed')}
-									</Paragraph>
 								)}
 							</div>
 						</div>
 					</CardContent>
 					<CardFooter className="flex-col gap-2">
 						<Button type="submit" className="w-full">
-							{isPending ? <Spinner /> : t('signUp.submitButton')}
+							{isPending ? <Spinner /> : t('resetPassword.submitButton')}
 						</Button>
 					</CardFooter>
 				</Card>
@@ -125,4 +108,4 @@ const SignUp = () => {
 	);
 };
 
-export default SignUp;
+export default ResetPassword;

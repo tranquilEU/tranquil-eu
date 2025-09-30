@@ -25,5 +25,23 @@
     "alreadyHaveAccount": "Already have an account? Login",
     "description": "Enter your details below to sign up",
     "registrationSuccessful": "Registration successful"
+  },
+  "forgotPassword": {
+    "title": "Forgot your password?",
+    "description": "Enter your email below and we will send you a link to reset your password.",
+    "backToLogin": "Back to Login",
+    "emailSent": "If your email exists, a reset link has been sent.",
+    "errorResponse": "Error sending reset link.",
+    "submitButton": "Send Reset Link"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "description": "Enter a new password below to reset your password.",
+    "backToLogin": "Back to Login",
+    "success": "Password reset successfully.",
+    "errorResponse": "Error resetting password.",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match.",
+    "submitButton": "Reset Password"
   }
 }

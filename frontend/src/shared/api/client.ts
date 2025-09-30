@@ -65,6 +65,31 @@ export interface ErrorResponse {
   error?: string;
 }
 
+export interface ForgotPasswordRequest {
+  /** The email of the user */
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  /** The reset token */
+  token: string;
+  /**
+   * The new password
+   * @minLength 6
+   */
+  password: string;
+}
+
+export interface ForgotPasswordResponse {
+  message?: string;
+  status?: string;
+}
+
+export interface ResetPasswordResponse {
+  message?: string;
+  status?: string;
+}
+
 export interface LogoutRequest {
   /** The refresh token to invalidate */
   refreshToken: string;
@@ -339,6 +364,136 @@ export const usePostApiAuthLogout = <TError = ErrorResponse,
     }
     
 /**
+ * @summary Request password reset link
+ */
+export const postApiAuthForgotPassword = (
+    forgotPasswordRequest: ForgotPasswordRequest,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axios<ForgotPasswordResponse>(
+      {url: `/api/auth/forgot-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: forgotPasswordRequest, signal
+    },
+      );
+    }
+  
+
+
+export const getPostApiAuthForgotPasswordMutationOptions = <TError = ForgotPasswordResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext> => {
+
+const mutationKey = ['postApiAuthForgotPassword'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, {data: ForgotPasswordRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthForgotPassword(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthForgotPassword>>>
+    export type PostApiAuthForgotPasswordMutationBody = ForgotPasswordRequest
+    export type PostApiAuthForgotPasswordMutationError = ForgotPasswordResponse
+
+    /**
+ * @summary Request password reset link
+ */
+export const usePostApiAuthForgotPassword = <TError = ForgotPasswordResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
+        TError,
+        {data: ForgotPasswordRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiAuthForgotPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Reset user password
+ */
+export const postApiAuthResetPassword = (
+    resetPasswordRequest: ResetPasswordRequest,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axios<ResetPasswordResponse>(
+      {url: `/api/auth/reset-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordRequest, signal
+    },
+      );
+    }
+  
+
+
+export const getPostApiAuthResetPasswordMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthResetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthResetPassword>>, TError,{data: ResetPasswordRequest}, TContext> => {
+
+const mutationKey = ['postApiAuthResetPassword'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthResetPassword>>, {data: ResetPasswordRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthResetPassword(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthResetPassword>>>
+    export type PostApiAuthResetPasswordMutationBody = ResetPasswordRequest
+    export type PostApiAuthResetPasswordMutationError = ErrorResponse
+
+    /**
+ * @summary Reset user password
+ */
+export const usePostApiAuthResetPassword = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthResetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthResetPassword>>,
+        TError,
+        {data: ResetPasswordRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiAuthResetPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
  * @summary Get current user profile
  */
 export const getApiMe = (
@@ -432,6 +587,10 @@ export const getPostApiAuthRefreshResponseMock = (overrideResponse: Partial< Pos
 
 export const getPostApiAuthLogoutResponseMock = (overrideResponse: Partial< LogoutResponse > = {}): LogoutResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
+export const getPostApiAuthForgotPasswordResponseMock = (overrideResponse: Partial< ForgotPasswordResponse > = {}): ForgotPasswordResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), status: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+
+export const getPostApiAuthResetPasswordResponseMock = (overrideResponse: Partial< ResetPasswordResponse > = {}): ResetPasswordResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), status: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+
 export const getGetApiMeResponseMock = (overrideResponse: Partial< MeResponse > = {}): MeResponse => ({id: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
 
@@ -483,6 +642,30 @@ export const getPostApiAuthLogoutMockHandler = (overrideResponse?: LogoutRespons
   })
 }
 
+export const getPostApiAuthForgotPasswordMockHandler = (overrideResponse?: ForgotPasswordResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ForgotPasswordResponse> | ForgotPasswordResponse)) => {
+  return http.post('*/api/auth/forgot-password', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostApiAuthForgotPasswordResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  })
+}
+
+export const getPostApiAuthResetPasswordMockHandler = (overrideResponse?: ResetPasswordResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ResetPasswordResponse> | ResetPasswordResponse)) => {
+  return http.post('*/api/auth/reset-password', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostApiAuthResetPasswordResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  })
+}
+
 export const getGetApiMeMockHandler = (overrideResponse?: MeResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeResponse> | MeResponse)) => {
   return http.get('*/api/me', async (info) => {await delay(1000);
   
@@ -499,5 +682,7 @@ export const getLoginAPIMock = () => [
   getPostApiAuthLoginMockHandler(),
   getPostApiAuthRefreshMockHandler(),
   getPostApiAuthLogoutMockHandler(),
+  getPostApiAuthForgotPasswordMockHandler(),
+  getPostApiAuthResetPasswordMockHandler(),
   getGetApiMeMockHandler()
 ]

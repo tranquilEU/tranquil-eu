@@ -7,7 +7,24 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
-const yaml = require("yaml");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+
+async function createTransporter() {
+  // Generate a test SMTP account
+  const testAccount = await nodemailer.createTestAccount();
+
+  // Create a transporter using Ethereal's SMTP
+  return nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: testAccount.user, // generated ethereal user
+      pass: testAccount.pass, // generated ethereal password
+    },
+  });
+}
 
 const app = express();
 app.use(express.json());
@@ -104,6 +121,33 @@ const swaggerDefinition = {
         },
       },
       ErrorResponse: {
+        type: "object",
+        properties: {
+          message: { type: "string" },
+        },
+      },
+      ForgotPasswordRequest: {
+        type: "object",
+        required: ["email"],
+        properties: {
+          email: { type: "string", format: "email" },
+        },
+      },
+      ResetPasswordRequest: {
+        type: "object",
+        required: ["token", "password"],
+        properties: {
+          token: { type: "string" },
+          password: { type: "string", minLength: 6 },
+        },
+      },
+      ForgotPasswordResponse: {
+        type: "object",
+        properties: {
+          message: { type: "string" },
+        },
+      },
+      ResetPasswordResponse: {
         type: "object",
         properties: {
           message: { type: "string" },
@@ -394,6 +438,186 @@ app.post("/api/auth/logout", async (req, res) => {
     console.error("Logout error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
+});
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset link
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ForgotPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: If email exists, reset link sent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForgotPasswordResponse'
+ *       400:
+ *         description: If email doesn't exist
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForgotPasswordResponse'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ForgotPasswordRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *           example: "X8f6B@example.com"
+ *     ForgotPasswordResponse:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           example: success
+ *         message:
+ *           type: string
+ *           example: If email exists, reset link sent
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           example: If email doesn't exist
+ */
+app.post("/api/auth/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  const user = await pool.query("SELECT id FROM users WHERE email=$1", [email]);
+  if (!user.rows.length)
+    return res
+      .status(200)
+      .json({ message: "If email exists, reset link sent" });
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 15); // 15 min expiry
+
+  await pool.query(
+    "INSERT INTO password_resets (user_id, token, expires_at) VALUES ($1, $2, $3)",
+    [user.rows[0].id, token, expiresAt]
+  );
+
+  // TODO: send email with link
+  const resetLink = `http://localhost:5173/reset-password/${token}`;
+  const transporter = await createTransporter();
+
+  const info = await transporter.sendMail({
+    from: '"MyApp Support" <no-reply@myapp.com>',
+    to: email,
+    subject: "Password Reset Request",
+    html: `
+    <p>You requested a password reset.</p>
+    <p>Click the link below to reset your password (valid for 15 minutes):</p>
+    <a href="${resetLink}">${resetLink}</a>
+  `,
+  });
+
+  // Preview URL (only works with Ethereal)
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+  res
+    .status(200)
+    .json({ message: "If email exists, reset link sent", status: "success" });
+});
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset user password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ResetPasswordResponse'
+ *       400:
+ *         description: Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ResetPasswordRequest:
+ *       type: object
+ *       required:
+ *         - token
+ *         - password
+ *       properties:
+ *         token:
+ *           type: string
+ *           description: The reset token
+ *           example: "my-reset-token"
+ *         password:
+ *           type: string
+ *           description: The new password
+ *           example: "new-password"
+ *     ResetPasswordResponse:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           example: success
+ *         message:
+ *           type: string
+ *           example: Password updated successfully
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           example: Invalid or expired token
+ */
+app.post("/api/auth/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+
+  const reset = await pool.query(
+    "SELECT * FROM password_resets WHERE token=$1 AND expires_at > NOW()",
+    [token]
+  );
+  if (!reset.rows.length)
+    return res.status(400).json({ error: "Invalid or expired token" });
+
+  const hashed = await bcrypt.hash(password, 10);
+  await pool.query("UPDATE users SET password_hash=$1 WHERE id=$2", [
+    hashed,
+    reset.rows[0].user_id,
+  ]);
+
+  // Invalidate token
+  await pool.query("DELETE FROM password_resets WHERE token=$1", [token]);
+
+  res
+    .status(200)
+    .json({ message: "Password updated successfully", status: "success" });
 });
 
 /**

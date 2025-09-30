@@ -3,12 +3,12 @@ export default {
     output: {
       client: "react-query",
       server: "http://localhost:3000",
-      target: "./src/api/client.ts",
+      target: "./src/shared/api/client.ts",
       tsconfig: "./tsconfig.json",
       mock: true,
       override: {
         mutator: {
-          path: "./src/api/axios.ts",
+          path: "./src/shared/api/axios.ts",
           name: "axios",
         },
       },
