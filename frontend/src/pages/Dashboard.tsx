@@ -1,6 +1,7 @@
 import { Heading } from '@/shared/components/Heading';
+import { Paragraph } from '@/shared/components/Paragraph';
 import { Button } from '@/shared/components/ui/button';
-import { Label } from '@/shared/components/ui/label';
+import { ROUTES } from '@/shared/constants';
 import { useNavigate } from 'react-router-dom';
 
 import { useGetApiMe, usePostApiAuthLogout } from '../shared/api/client';
@@ -11,7 +12,7 @@ const Dashboard = () => {
 	const { mutate } = usePostApiAuthLogout({
 		mutation: {
 			onSuccess: () => {
-				navigate('/login');
+				navigate(ROUTES.Home);
 			}
 		}
 	});
@@ -26,13 +27,13 @@ const Dashboard = () => {
 		localStorage.removeItem('refreshToken');
 	};
 
-	if (isLoading) return <p>Loading...</p>;
-	if (isError) return <p>Failed to load user</p>;
+	if (isLoading) return <Paragraph>Loading...</Paragraph>;
+	if (isError) return <Paragraph type="error">Failed to load user</Paragraph>;
 
 	return (
 		<div style={{ padding: '2rem' }}>
 			<Heading size="h1">Dashboard</Heading>
-			<Label>Welcome, {data?.email}</Label>
+			<Paragraph>Welcome, {data?.email}</Paragraph>
 			<Button onClick={handleLogout}>Logout</Button>
 		</div>
 	);

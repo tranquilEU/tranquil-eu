@@ -12,10 +12,17 @@ const labelVariants = cva(
 				sm: 'text-xs',
 				md: 'text-sm',
 				lg: 'text-base'
+			},
+			type: {
+				default: 'text-foreground',
+				error: 'text-red-600 dark:text-red-500',
+				alert: 'text-yellow-600 dark:text-yellow-500',
+				success: 'text-green-600 dark:text-green-500'
 			}
 		},
 		defaultVariants: {
-			size: 'md'
+			size: 'md',
+			type: 'default'
 		}
 	}
 );
@@ -24,11 +31,11 @@ export interface LabelProps
 	extends React.ComponentProps<typeof LabelPrimitive.Root>,
 		VariantProps<typeof labelVariants> {}
 
-function Label({ className, size, ...props }: LabelProps) {
+function Label({ className, size, type, ...props }: LabelProps) {
 	return (
 		<LabelPrimitive.Root
 			data-slot="label"
-			className={cn(labelVariants({ size }), className)}
+			className={cn(labelVariants({ size, type }), className)}
 			{...props}
 		/>
 	);

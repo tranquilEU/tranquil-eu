@@ -1,4 +1,6 @@
 import { Heading } from '@/shared/components/Heading';
+import { Button } from '@/shared/components/ui/button';
+import { ROUTES } from '@/shared/constants';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,9 +21,9 @@ const Home: React.FC = () => {
 					{t('login.title')}
 				</Heading>
 				<LanguageSwitcher />
-				<button type="button" onClick={() => navigate('/login')}>
-					{t('login.loginButton')}
-				</button>
+				<Button type="button" onClick={() => navigate(ROUTES.Login)}>
+					{t('common.login')}
+				</Button>
 			</form>
 		</div>
 	);

@@ -1,10 +1,29 @@
 {
+  "common": {
+    "email": "E-pošta",
+    "password": "Lozinka",
+    "login": "Prijava",
+    "signUp": "Registracija",
+    "emailPlaceholder": "ivan.horvat@eposta.hr",
+    "passwordPlaceholder": "********"
+  },
   "login": {
-    "title": "Prijava",
-    "emailPlaceholder": "E-pošta",
-    "passwordPlaceholder": "Lozinka",
-    "loginButton": "Prijavi se",
-    "loggingIn": "Prijavljivanje...",
-    "loginFailed": "Prijava nije uspjela"
+    "submitButton": "Prijava",
+    "loggingIn": "Prijava...",
+    "loginFailed": "Prijava nije uspjela",
+    "title": "Prijava na svoj račun",
+    "description": "Unesite svoju e-poštu da biste se prijavili na svoj račun",
+    "forgotPassword": "Zaboravili ste lozinku?"
+  },
+  "signUp": {
+    "submitButton": "Registracija",
+    "signingUp": "Registracija...",
+    "signUpFailed": "Registracija nije uspjela",
+    "confirmPassword": "Potvrdi lozinku",
+    "passwordMismatch": "Lozinke se ne podudaraju",
+    "title": "Kreirajte novi račun",
+    "alreadyHaveAccount": "Već imate račun? Prijava",
+    "description": "Unesite podatke ispod da biste se registrirali",
+    "registrationSuccessful": "Registracija uspjela"
   }
 }

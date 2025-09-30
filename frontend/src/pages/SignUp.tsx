@@ -14,51 +14,58 @@ import { ROUTES } from '@/shared/constants';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-import { usePostApiAuthLogin } from '../shared/api/client';
+import { usePostApiAuthRegister } from '../shared/api/client';
 
-const Login = () => {
+const SignUp = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation('translation');
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-	const { mutate, isPending, isError } = usePostApiAuthLogin({
+	const { mutate, isPending, isError } = usePostApiAuthRegister({
 		mutation: {
 			onSuccess: data => {
 				localStorage.setItem('accessToken', data.accessToken ?? '');
 				localStorage.setItem('refreshToken', data.refreshToken ?? '');
 				navigate(ROUTES.Dashboard);
+				toast.success(t('signUp.registrationSuccessful'));
 			},
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			onError: (error: any) => {
-				setErrorMessage(error.response?.data?.message || 'Login failed');
+				setErrorMessage(error.response?.data?.message);
 			}
 		}
 	});
 
-	const handleSignUp = (e: React.FormEvent) => {
+	const handleLoginRedirect = (e: React.FormEvent) => {
 		e.preventDefault();
-		navigate(ROUTES.SignUp);
+		navigate(ROUTES.Login);
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		if (password !== confirmPassword) {
+			setErrorMessage(t('signUp.passwordMismatch'));
+			return;
+		}
 		mutate({ data: { email, password } });
 	};
 
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-blue-300 p-4">
+		<div className="flex min-h-screen flex-col items-center justify-center bg-green-300 p-4">
 			<form onSubmit={handleSubmit} className="w-full max-w-md">
 				<Card className="mx-auto w-full max-w-md">
 					<CardHeader>
-						<CardTitle>{t('login.title')}</CardTitle>
-						<CardDescription>{t('login.description')}</CardDescription>
+						<CardTitle>{t('signUp.title')}</CardTitle>
+						<CardDescription>{t('signUp.description')}</CardDescription>
 						<CardAction>
-							<Button variant="link" onClick={handleSignUp}>
-								{t('common.signUp')}
+							<Button variant="link" onClick={handleLoginRedirect}>
+								{t('signUp.alreadyHaveAccount')}
 							</Button>
 						</CardAction>
 					</CardHeader>
@@ -75,27 +82,32 @@ const Login = () => {
 								/>
 							</div>
 							<div className="grid gap-2">
-								<div className="flex items-center">
-									<Paragraph htmlFor="password">
-										{t('common.password')}
-									</Paragraph>
-									<Button
-										variant="link"
-										onClick={() => navigate(ROUTES.ForgotPassword)}
-										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-									>
-										{t('login.forgotPassword')}
-									</Button>
-								</div>
+								<Paragraph htmlFor="password">{t('common.password')}</Paragraph>
 								<Input
 									id="password"
 									type="password"
 									onChange={e => setPassword(e.target.value)}
+									placeholder={t('common.passwordPlaceholder')}
 									required
 								/>
+							</div>
+							<div className="grid gap-2">
+								<Paragraph htmlFor="confirmPassword">
+									{t('signUp.confirmPassword')}
+								</Paragraph>
+								<Input
+									id="confirmPassword"
+									type="password"
+									placeholder={t('common.passwordPlaceholder')}
+									onChange={e => setConfirmPassword(e.target.value)}
+									required
+								/>
+								{password !== confirmPassword && confirmPassword.length > 0 && (
+									<Paragraph type="error">{errorMessage}</Paragraph>
+								)}
 								{isError && (
 									<Paragraph type="error">
-										{errorMessage || t('login.loginFailed')}
+										{errorMessage || t('signUp.signUpFailed')}
 									</Paragraph>
 								)}
 							</div>
@@ -103,7 +115,7 @@ const Login = () => {
 					</CardContent>
 					<CardFooter className="flex-col gap-2">
 						<Button type="submit" className="w-full">
-							{isPending ? t('login.loggingIn') : t('login.submitButton')}
+							{isPending ? t('signUp.signingUp') : t('signUp.submitButton')}
 						</Button>
 					</CardFooter>
 				</Card>
@@ -112,4 +124,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default SignUp;
