@@ -1,0 +1,116 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "label": "$(run) Frontend",
+          "running": {
+            "color": "#22C1D6",
+            "label": "$(triangle-right) Frontend"
+          },
+          "detail": "Start Frontend App"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Backend",
+      "type": "shell",
+      "command": "node server.js",
+      "options": {
+        "cwd": "${workspaceFolder}/backend",
+        "statusbar": {
+          "label": "$(run) Backend",
+          "running": {
+            "color": "#22d622",
+            "label": "$(triangle-right) Backend"
+          },
+          "detail": "Start Backend Server"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Full Stack",
+      "type": "shell",
+      "command": "echo Starting Full Stack...",
+      "dependsOn": ["Start Frontend", "Start Backend"],
+      "dependsOrder": "parallel",
+      "isBackground": true,
+      "problemMatcher": [],
+      "options": {
+        "statusbar": {
+          "label": "$(ruby) Full Stack",
+          "running": {
+            "color": "#f7ca02",
+            "label": "$(triangle-right) Full Stack"
+          },
+          "detail": "Start Frontend and Backend"
+        }
+      }
+    },
+    {
+      "label": "Generate API Client",
+      "type": "shell",
+      "command": "npx orval",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "label": "$(sync) Generate API Client",
+          "detail": "Generate API Client from OpenAPI Spec"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "npm run lint",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "label": "$(debug) Lint",
+          "detail": "Lint"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Type-check",
+      "type": "shell",
+      "command": "npm run type-check",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "label": "$(callstack-view-session) Type-check",
+          "detail": "Type-check"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "npm run build",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "label": "$(gift) Build",
+          "detail": "Build"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
