@@ -1,7 +1,8 @@
-import { cn } from '@/shared/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import type { JSX } from 'react';
 import * as React from 'react';
+
+import { cn } from '@/shared/lib/utils';
 
 // Map size to both element and style
 const headingVariants = cva('font-bold tracking-tight text-gray-900', {

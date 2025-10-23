@@ -1,4 +1,9 @@
-import { usePostApiAuthForgotPassword } from '@/shared/api/client';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
 import { Paragraph } from '@/shared/components/Paragraph';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -11,12 +16,10 @@ import {
 	CardTitle
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
+
 import { ROUTES } from '@/shared/constants';
-import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+
+import { usePostApiAuthForgotPassword } from '@/shared/api/client';
 
 const ForgotPassword = () => {
 	const { t } = useTranslation('translation');

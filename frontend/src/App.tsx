@@ -1,8 +1,9 @@
-import { ROUTES } from '@/shared/constants';
 import { lazy } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import ProtectedRoute from './shared/components/ProtectedRoute';
+import ProtectedRoute from '@/shared/components/ProtectedRoute';
+
+import { ROUTES } from '@/shared/constants';
 
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));

@@ -1,7 +1,8 @@
-import { cn } from '@/shared/lib/utils';
 // eslint-disable-next-line no-restricted-imports
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import * as React from 'react';
+
+import { cn } from '@/shared/lib/utils';
 
 function TooltipProvider({
 	delayDuration = 0,

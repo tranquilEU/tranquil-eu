@@ -1,8 +1,9 @@
-import { defaultNS, resources } from '@/shared/i18n/resources';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
+
+import { defaultNS, resources } from '@/shared/i18n/resources';
 
 i18n
 	// i18next-http-backend

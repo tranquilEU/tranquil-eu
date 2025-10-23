@@ -1,10 +1,12 @@
+import { useNavigate } from 'react-router-dom';
+
 import { Heading } from '@/shared/components/Heading';
 import { Paragraph } from '@/shared/components/Paragraph';
 import { Button } from '@/shared/components/ui/button';
-import { ROUTES } from '@/shared/constants';
-import { useNavigate } from 'react-router-dom';
 
-import { useGetApiMe, usePostApiAuthLogout } from '../shared/api/client';
+import { ROUTES } from '@/shared/constants';
+
+import { useGetApiMe, usePostApiAuthLogout } from '@/shared/api/client';
 
 const Dashboard = () => {
 	const navigate = useNavigate();

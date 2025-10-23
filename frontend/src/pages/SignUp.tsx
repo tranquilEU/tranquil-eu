@@ -1,3 +1,8 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
 import { Paragraph } from '@/shared/components/Paragraph';
 import { Spinner } from '@/shared/components/Spinner';
 import { Button } from '@/shared/components/ui/button';
@@ -11,13 +16,10 @@ import {
 	CardTitle
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
-import { ROUTES } from '@/shared/constants';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
-import { usePostApiAuthRegister } from '../shared/api/client';
+import { ROUTES } from '@/shared/constants';
+
+import { usePostApiAuthRegister } from '@/shared/api/client';
 
 const SignUp = () => {
 	const navigate = useNavigate();

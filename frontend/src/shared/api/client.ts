@@ -5,684 +5,986 @@
  * Simple login API using JWT
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { faker } from '@faker-js/faker';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
-  MutationFunction,
-  QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseMutationOptions,
-  UseMutationResult,
-  UseQueryOptions,
-  UseQueryResult
+	DataTag,
+	DefinedInitialDataOptions,
+	DefinedUseQueryResult,
+	MutationFunction,
+	QueryClient,
+	QueryFunction,
+	QueryKey,
+	UndefinedInitialDataOptions,
+	UseMutationOptions,
+	UseMutationResult,
+	UseQueryOptions,
+	UseQueryResult
 } from '@tanstack/react-query';
+import { HttpResponse, delay, http } from 'msw';
 
-import {
-  faker
-} from '@faker-js/faker';
+import { axios } from '@/shared/api/axios';
 
-import {
-  HttpResponse,
-  delay,
-  http
-} from 'msw';
-
-import { axios } from './axios';
 export interface RegisterRequest {
-  email: string;
-  /** @minLength 6 */
-  password: string;
+	email: string;
+	/** @minLength 6 */
+	password: string;
 }
 
 export interface LoginRequest {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 }
 
 export interface TokenResponse {
-  accessToken?: string;
-  refreshToken?: string;
+	accessToken?: string;
+	refreshToken?: string;
 }
 
 export interface RefreshRequest {
-  refreshToken: string;
+	refreshToken: string;
 }
 
 export interface MeResponse {
-  id?: string;
-  email?: string;
+	id?: string;
+	email?: string;
 }
 
 export interface ErrorResponse {
-  message?: string;
-  error?: string;
+	message?: string;
+	error?: string;
 }
 
 export interface ForgotPasswordRequest {
-  /** The email of the user */
-  email: string;
+	/** The email of the user */
+	email: string;
 }
 
 export interface ResetPasswordRequest {
-  /** The reset token */
-  token: string;
-  /**
-   * The new password
-   * @minLength 6
-   */
-  password: string;
+	/** The reset token */
+	token: string;
+	/**
+	 * The new password
+	 * @minLength 6
+	 */
+	password: string;
 }
 
 export interface ForgotPasswordResponse {
-  message?: string;
-  status?: string;
+	message?: string;
+	status?: string;
 }
 
 export interface ResetPasswordResponse {
-  message?: string;
-  status?: string;
+	message?: string;
+	status?: string;
 }
 
 export interface LogoutRequest {
-  /** The refresh token to invalidate */
-  refreshToken: string;
+	/** The refresh token to invalidate */
+	refreshToken: string;
 }
 
 export interface LogoutResponse {
-  message?: string;
+	message?: string;
 }
 
 export type PostApiAuthRefresh200 = {
-  accessToken?: string;
+	accessToken?: string;
 };
 
 /**
  * @summary Register a new user
  */
 export const postApiAuthRegister = (
-    registerRequest: RegisterRequest,
- signal?: AbortSignal
+	registerRequest: RegisterRequest,
+	signal?: AbortSignal
 ) => {
-      
-      
-      return axios<TokenResponse>(
-      {url: `/api/auth/register`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: registerRequest, signal
-    },
-      );
-    }
-  
+	return axios<TokenResponse>({
+		url: `/api/auth/register`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: registerRequest,
+		signal
+	});
+};
 
+export const getPostApiAuthRegisterMutationOptions = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof postApiAuthRegister>>,
+		TError,
+		{ data: RegisterRequest },
+		TContext
+	>;
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof postApiAuthRegister>>,
+	TError,
+	{ data: RegisterRequest },
+	TContext
+> => {
+	const mutationKey = ['postApiAuthRegister'];
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			'mutationKey' in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } };
 
-export const getPostApiAuthRegisterMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRegister>>, TError,{data: RegisterRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRegister>>, TError,{data: RegisterRequest}, TContext> => {
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof postApiAuthRegister>>,
+		{ data: RegisterRequest }
+	> = props => {
+		const { data } = props ?? {};
 
-const mutationKey = ['postApiAuthRegister'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+		return postApiAuthRegister(data);
+	};
 
-      
+	return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiAuthRegisterMutationResult = NonNullable<
+	Awaited<ReturnType<typeof postApiAuthRegister>>
+>;
+export type PostApiAuthRegisterMutationBody = RegisterRequest;
+export type PostApiAuthRegisterMutationError = ErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthRegister>>, {data: RegisterRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthRegister(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthRegister>>>
-    export type PostApiAuthRegisterMutationBody = RegisterRequest
-    export type PostApiAuthRegisterMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Register a new user
  */
-export const usePostApiAuthRegister = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRegister>>, TError,{data: RegisterRequest}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthRegister>>,
-        TError,
-        {data: RegisterRequest},
-        TContext
-      > => {
+export const usePostApiAuthRegister = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof postApiAuthRegister>>,
+			TError,
+			{ data: RegisterRequest },
+			TContext
+		>;
+	},
+	queryClient?: QueryClient
+): UseMutationResult<
+	Awaited<ReturnType<typeof postApiAuthRegister>>,
+	TError,
+	{ data: RegisterRequest },
+	TContext
+> => {
+	const mutationOptions = getPostApiAuthRegisterMutationOptions(options);
 
-      const mutationOptions = getPostApiAuthRegisterMutationOptions(options);
+	return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Login with email and password
  */
 export const postApiAuthLogin = (
-    loginRequest: LoginRequest,
- signal?: AbortSignal
+	loginRequest: LoginRequest,
+	signal?: AbortSignal
 ) => {
-      
-      
-      return axios<TokenResponse>(
-      {url: `/api/auth/login`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: loginRequest, signal
-    },
-      );
-    }
-  
+	return axios<TokenResponse>({
+		url: `/api/auth/login`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: loginRequest,
+		signal
+	});
+};
 
+export const getPostApiAuthLoginMutationOptions = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof postApiAuthLogin>>,
+		TError,
+		{ data: LoginRequest },
+		TContext
+	>;
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof postApiAuthLogin>>,
+	TError,
+	{ data: LoginRequest },
+	TContext
+> => {
+	const mutationKey = ['postApiAuthLogin'];
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			'mutationKey' in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } };
 
-export const getPostApiAuthLoginMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogin>>, TError,{data: LoginRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogin>>, TError,{data: LoginRequest}, TContext> => {
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof postApiAuthLogin>>,
+		{ data: LoginRequest }
+	> = props => {
+		const { data } = props ?? {};
 
-const mutationKey = ['postApiAuthLogin'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+		return postApiAuthLogin(data);
+	};
 
-      
+	return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiAuthLoginMutationResult = NonNullable<
+	Awaited<ReturnType<typeof postApiAuthLogin>>
+>;
+export type PostApiAuthLoginMutationBody = LoginRequest;
+export type PostApiAuthLoginMutationError = ErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthLogin>>, {data: LoginRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthLogin(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthLogin>>>
-    export type PostApiAuthLoginMutationBody = LoginRequest
-    export type PostApiAuthLoginMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Login with email and password
  */
-export const usePostApiAuthLogin = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogin>>, TError,{data: LoginRequest}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthLogin>>,
-        TError,
-        {data: LoginRequest},
-        TContext
-      > => {
+export const usePostApiAuthLogin = <TError = ErrorResponse, TContext = unknown>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof postApiAuthLogin>>,
+			TError,
+			{ data: LoginRequest },
+			TContext
+		>;
+	},
+	queryClient?: QueryClient
+): UseMutationResult<
+	Awaited<ReturnType<typeof postApiAuthLogin>>,
+	TError,
+	{ data: LoginRequest },
+	TContext
+> => {
+	const mutationOptions = getPostApiAuthLoginMutationOptions(options);
 
-      const mutationOptions = getPostApiAuthLoginMutationOptions(options);
+	return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Refresh access token
  */
 export const postApiAuthRefresh = (
-    refreshRequest: RefreshRequest,
- signal?: AbortSignal
+	refreshRequest: RefreshRequest,
+	signal?: AbortSignal
 ) => {
-      
-      
-      return axios<PostApiAuthRefresh200>(
-      {url: `/api/auth/refresh`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: refreshRequest, signal
-    },
-      );
-    }
-  
+	return axios<PostApiAuthRefresh200>({
+		url: `/api/auth/refresh`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: refreshRequest,
+		signal
+	});
+};
 
+export const getPostApiAuthRefreshMutationOptions = <
+	TError = ErrorResponse | ErrorResponse,
+	TContext = unknown
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof postApiAuthRefresh>>,
+		TError,
+		{ data: RefreshRequest },
+		TContext
+	>;
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof postApiAuthRefresh>>,
+	TError,
+	{ data: RefreshRequest },
+	TContext
+> => {
+	const mutationKey = ['postApiAuthRefresh'];
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			'mutationKey' in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } };
 
-export const getPostApiAuthRefreshMutationOptions = <TError = ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRefresh>>, TError,{data: RefreshRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRefresh>>, TError,{data: RefreshRequest}, TContext> => {
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof postApiAuthRefresh>>,
+		{ data: RefreshRequest }
+	> = props => {
+		const { data } = props ?? {};
 
-const mutationKey = ['postApiAuthRefresh'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+		return postApiAuthRefresh(data);
+	};
 
-      
+	return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiAuthRefreshMutationResult = NonNullable<
+	Awaited<ReturnType<typeof postApiAuthRefresh>>
+>;
+export type PostApiAuthRefreshMutationBody = RefreshRequest;
+export type PostApiAuthRefreshMutationError = ErrorResponse | ErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthRefresh>>, {data: RefreshRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthRefresh(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthRefresh>>>
-    export type PostApiAuthRefreshMutationBody = RefreshRequest
-    export type PostApiAuthRefreshMutationError = ErrorResponse | ErrorResponse
-
-    /**
+/**
  * @summary Refresh access token
  */
-export const usePostApiAuthRefresh = <TError = ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRefresh>>, TError,{data: RefreshRequest}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthRefresh>>,
-        TError,
-        {data: RefreshRequest},
-        TContext
-      > => {
+export const usePostApiAuthRefresh = <
+	TError = ErrorResponse | ErrorResponse,
+	TContext = unknown
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof postApiAuthRefresh>>,
+			TError,
+			{ data: RefreshRequest },
+			TContext
+		>;
+	},
+	queryClient?: QueryClient
+): UseMutationResult<
+	Awaited<ReturnType<typeof postApiAuthRefresh>>,
+	TError,
+	{ data: RefreshRequest },
+	TContext
+> => {
+	const mutationOptions = getPostApiAuthRefreshMutationOptions(options);
 
-      const mutationOptions = getPostApiAuthRefreshMutationOptions(options);
+	return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Logout user and invalidate refresh token
  */
 export const postApiAuthLogout = (
-    logoutRequest: LogoutRequest,
- signal?: AbortSignal
+	logoutRequest: LogoutRequest,
+	signal?: AbortSignal
 ) => {
-      
-      
-      return axios<LogoutResponse>(
-      {url: `/api/auth/logout`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: logoutRequest, signal
-    },
-      );
-    }
-  
+	return axios<LogoutResponse>({
+		url: `/api/auth/logout`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: logoutRequest,
+		signal
+	});
+};
 
+export const getPostApiAuthLogoutMutationOptions = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof postApiAuthLogout>>,
+		TError,
+		{ data: LogoutRequest },
+		TContext
+	>;
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof postApiAuthLogout>>,
+	TError,
+	{ data: LogoutRequest },
+	TContext
+> => {
+	const mutationKey = ['postApiAuthLogout'];
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			'mutationKey' in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } };
 
-export const getPostApiAuthLogoutMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,{data: LogoutRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,{data: LogoutRequest}, TContext> => {
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof postApiAuthLogout>>,
+		{ data: LogoutRequest }
+	> = props => {
+		const { data } = props ?? {};
 
-const mutationKey = ['postApiAuthLogout'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+		return postApiAuthLogout(data);
+	};
 
-      
+	return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiAuthLogoutMutationResult = NonNullable<
+	Awaited<ReturnType<typeof postApiAuthLogout>>
+>;
+export type PostApiAuthLogoutMutationBody = LogoutRequest;
+export type PostApiAuthLogoutMutationError = ErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthLogout>>, {data: LogoutRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthLogout(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthLogout>>>
-    export type PostApiAuthLogoutMutationBody = LogoutRequest
-    export type PostApiAuthLogoutMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Logout user and invalidate refresh token
  */
-export const usePostApiAuthLogout = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,{data: LogoutRequest}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthLogout>>,
-        TError,
-        {data: LogoutRequest},
-        TContext
-      > => {
+export const usePostApiAuthLogout = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof postApiAuthLogout>>,
+			TError,
+			{ data: LogoutRequest },
+			TContext
+		>;
+	},
+	queryClient?: QueryClient
+): UseMutationResult<
+	Awaited<ReturnType<typeof postApiAuthLogout>>,
+	TError,
+	{ data: LogoutRequest },
+	TContext
+> => {
+	const mutationOptions = getPostApiAuthLogoutMutationOptions(options);
 
-      const mutationOptions = getPostApiAuthLogoutMutationOptions(options);
+	return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Request password reset link
  */
 export const postApiAuthForgotPassword = (
-    forgotPasswordRequest: ForgotPasswordRequest,
- signal?: AbortSignal
+	forgotPasswordRequest: ForgotPasswordRequest,
+	signal?: AbortSignal
 ) => {
-      
-      
-      return axios<ForgotPasswordResponse>(
-      {url: `/api/auth/forgot-password`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: forgotPasswordRequest, signal
-    },
-      );
-    }
-  
+	return axios<ForgotPasswordResponse>({
+		url: `/api/auth/forgot-password`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: forgotPasswordRequest,
+		signal
+	});
+};
 
+export const getPostApiAuthForgotPasswordMutationOptions = <
+	TError = ForgotPasswordResponse,
+	TContext = unknown
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
+		TError,
+		{ data: ForgotPasswordRequest },
+		TContext
+	>;
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
+	TError,
+	{ data: ForgotPasswordRequest },
+	TContext
+> => {
+	const mutationKey = ['postApiAuthForgotPassword'];
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			'mutationKey' in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } };
 
-export const getPostApiAuthForgotPasswordMutationOptions = <TError = ForgotPasswordResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext> => {
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
+		{ data: ForgotPasswordRequest }
+	> = props => {
+		const { data } = props ?? {};
 
-const mutationKey = ['postApiAuthForgotPassword'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+		return postApiAuthForgotPassword(data);
+	};
 
-      
+	return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiAuthForgotPasswordMutationResult = NonNullable<
+	Awaited<ReturnType<typeof postApiAuthForgotPassword>>
+>;
+export type PostApiAuthForgotPasswordMutationBody = ForgotPasswordRequest;
+export type PostApiAuthForgotPasswordMutationError = ForgotPasswordResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, {data: ForgotPasswordRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthForgotPassword(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthForgotPassword>>>
-    export type PostApiAuthForgotPasswordMutationBody = ForgotPasswordRequest
-    export type PostApiAuthForgotPasswordMutationError = ForgotPasswordResponse
-
-    /**
+/**
  * @summary Request password reset link
  */
-export const usePostApiAuthForgotPassword = <TError = ForgotPasswordResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthForgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
-        TError,
-        {data: ForgotPasswordRequest},
-        TContext
-      > => {
+export const usePostApiAuthForgotPassword = <
+	TError = ForgotPasswordResponse,
+	TContext = unknown
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
+			TError,
+			{ data: ForgotPasswordRequest },
+			TContext
+		>;
+	},
+	queryClient?: QueryClient
+): UseMutationResult<
+	Awaited<ReturnType<typeof postApiAuthForgotPassword>>,
+	TError,
+	{ data: ForgotPasswordRequest },
+	TContext
+> => {
+	const mutationOptions = getPostApiAuthForgotPasswordMutationOptions(options);
 
-      const mutationOptions = getPostApiAuthForgotPasswordMutationOptions(options);
+	return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Reset user password
  */
 export const postApiAuthResetPassword = (
-    resetPasswordRequest: ResetPasswordRequest,
- signal?: AbortSignal
+	resetPasswordRequest: ResetPasswordRequest,
+	signal?: AbortSignal
 ) => {
-      
-      
-      return axios<ResetPasswordResponse>(
-      {url: `/api/auth/reset-password`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: resetPasswordRequest, signal
-    },
-      );
-    }
-  
+	return axios<ResetPasswordResponse>({
+		url: `/api/auth/reset-password`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: resetPasswordRequest,
+		signal
+	});
+};
 
+export const getPostApiAuthResetPasswordMutationOptions = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof postApiAuthResetPassword>>,
+		TError,
+		{ data: ResetPasswordRequest },
+		TContext
+	>;
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof postApiAuthResetPassword>>,
+	TError,
+	{ data: ResetPasswordRequest },
+	TContext
+> => {
+	const mutationKey = ['postApiAuthResetPassword'];
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			'mutationKey' in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } };
 
-export const getPostApiAuthResetPasswordMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthResetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthResetPassword>>, TError,{data: ResetPasswordRequest}, TContext> => {
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof postApiAuthResetPassword>>,
+		{ data: ResetPasswordRequest }
+	> = props => {
+		const { data } = props ?? {};
 
-const mutationKey = ['postApiAuthResetPassword'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+		return postApiAuthResetPassword(data);
+	};
 
-      
+	return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiAuthResetPasswordMutationResult = NonNullable<
+	Awaited<ReturnType<typeof postApiAuthResetPassword>>
+>;
+export type PostApiAuthResetPasswordMutationBody = ResetPasswordRequest;
+export type PostApiAuthResetPasswordMutationError = ErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthResetPassword>>, {data: ResetPasswordRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthResetPassword(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthResetPassword>>>
-    export type PostApiAuthResetPasswordMutationBody = ResetPasswordRequest
-    export type PostApiAuthResetPasswordMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Reset user password
  */
-export const usePostApiAuthResetPassword = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthResetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthResetPassword>>,
-        TError,
-        {data: ResetPasswordRequest},
-        TContext
-      > => {
+export const usePostApiAuthResetPassword = <
+	TError = ErrorResponse,
+	TContext = unknown
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof postApiAuthResetPassword>>,
+			TError,
+			{ data: ResetPasswordRequest },
+			TContext
+		>;
+	},
+	queryClient?: QueryClient
+): UseMutationResult<
+	Awaited<ReturnType<typeof postApiAuthResetPassword>>,
+	TError,
+	{ data: ResetPasswordRequest },
+	TContext
+> => {
+	const mutationOptions = getPostApiAuthResetPasswordMutationOptions(options);
 
-      const mutationOptions = getPostApiAuthResetPasswordMutationOptions(options);
+	return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Get current user profile
  */
-export const getApiMe = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return axios<MeResponse>(
-      {url: `/api/me`, method: 'GET', signal
-    },
-      );
-    }
-  
+export const getApiMe = (signal?: AbortSignal) => {
+	return axios<MeResponse>({ url: `/api/me`, method: 'GET', signal });
+};
 
 export const getGetApiMeQueryKey = () => {
-    return [`/api/me`] as const;
-    }
+	return [`/api/me`] as const;
+};
 
-    
-export const getGetApiMeQueryOptions = <TData = Awaited<ReturnType<typeof getApiMe>>, TError = ErrorResponse | ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>>, }
-) => {
+export const getGetApiMeQueryOptions = <
+	TData = Awaited<ReturnType<typeof getApiMe>>,
+	TError = ErrorResponse | ErrorResponse
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>
+	>;
+}) => {
+	const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+	const queryKey = queryOptions?.queryKey ?? getGetApiMeQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiMeQueryKey();
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMe>>> = ({
+		signal
+	}) => getApiMe(signal);
 
-  
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getApiMe>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMe>>> = ({ signal }) => getApiMe(signal);
+export type GetApiMeQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getApiMe>>
+>;
+export type GetApiMeQueryError = ErrorResponse | ErrorResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiMe>>>
-export type GetApiMeQueryError = ErrorResponse | ErrorResponse
-
-
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = ErrorResponse | ErrorResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiMe>>,
-          TError,
-          Awaited<ReturnType<typeof getApiMe>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = ErrorResponse | ErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiMe>>,
-          TError,
-          Awaited<ReturnType<typeof getApiMe>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = ErrorResponse | ErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiMe<
+	TData = Awaited<ReturnType<typeof getApiMe>>,
+	TError = ErrorResponse | ErrorResponse
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getApiMe>>,
+					TError,
+					Awaited<ReturnType<typeof getApiMe>>
+				>,
+				'initialData'
+			>;
+	},
+	queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiMe<
+	TData = Awaited<ReturnType<typeof getApiMe>>,
+	TError = ErrorResponse | ErrorResponse
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getApiMe>>,
+					TError,
+					Awaited<ReturnType<typeof getApiMe>>
+				>,
+				'initialData'
+			>;
+	},
+	queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiMe<
+	TData = Awaited<ReturnType<typeof getApiMe>>,
+	TError = ErrorResponse | ErrorResponse
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>
+		>;
+	},
+	queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get current user profile
  */
 
-export function useGetApiMe<TData = Awaited<ReturnType<typeof getApiMe>>, TError = ErrorResponse | ErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiMe<
+	TData = Awaited<ReturnType<typeof getApiMe>>,
+	TError = ErrorResponse | ErrorResponse
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getApiMe>>, TError, TData>
+		>;
+	},
+	queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+} {
+	const queryOptions = getGetApiMeQueryOptions(options);
 
-  const queryOptions = getGetApiMeQueryOptions(options)
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+	query.queryKey = queryOptions.queryKey;
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+	return query;
 }
 
+export const getPostApiAuthRegisterResponseMock = (
+	overrideResponse: Partial<TokenResponse> = {}
+): TokenResponse => ({
+	accessToken: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	refreshToken: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getPostApiAuthRegisterResponseMock = (overrideResponse: Partial< TokenResponse > = {}): TokenResponse => ({accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), refreshToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPostApiAuthLoginResponseMock = (
+	overrideResponse: Partial<TokenResponse> = {}
+): TokenResponse => ({
+	accessToken: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	refreshToken: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getPostApiAuthLoginResponseMock = (overrideResponse: Partial< TokenResponse > = {}): TokenResponse => ({accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), refreshToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPostApiAuthRefreshResponseMock = (
+	overrideResponse: Partial<PostApiAuthRefresh200> = {}
+): PostApiAuthRefresh200 => ({
+	accessToken: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getPostApiAuthRefreshResponseMock = (overrideResponse: Partial< PostApiAuthRefresh200 > = {}): PostApiAuthRefresh200 => ({accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPostApiAuthLogoutResponseMock = (
+	overrideResponse: Partial<LogoutResponse> = {}
+): LogoutResponse => ({
+	message: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getPostApiAuthLogoutResponseMock = (overrideResponse: Partial< LogoutResponse > = {}): LogoutResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPostApiAuthForgotPasswordResponseMock = (
+	overrideResponse: Partial<ForgotPasswordResponse> = {}
+): ForgotPasswordResponse => ({
+	message: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	status: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getPostApiAuthForgotPasswordResponseMock = (overrideResponse: Partial< ForgotPasswordResponse > = {}): ForgotPasswordResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), status: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPostApiAuthResetPasswordResponseMock = (
+	overrideResponse: Partial<ResetPasswordResponse> = {}
+): ResetPasswordResponse => ({
+	message: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	status: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getPostApiAuthResetPasswordResponseMock = (overrideResponse: Partial< ResetPasswordResponse > = {}): ResetPasswordResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), status: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getGetApiMeResponseMock = (
+	overrideResponse: Partial<MeResponse> = {}
+): MeResponse => ({
+	id: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	email: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		undefined
+	]),
+	...overrideResponse
+});
 
-export const getGetApiMeResponseMock = (overrideResponse: Partial< MeResponse > = {}): MeResponse => ({id: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPostApiAuthRegisterMockHandler = (
+	overrideResponse?:
+		| TokenResponse
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<TokenResponse> | TokenResponse)
+) => {
+	return http.post('*/api/auth/register', async info => {
+		await delay(1000);
 
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getPostApiAuthRegisterResponseMock()
+			),
+			{ status: 201, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
 
-export const getPostApiAuthRegisterMockHandler = (overrideResponse?: TokenResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<TokenResponse> | TokenResponse)) => {
-  return http.post('*/api/auth/register', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAuthRegisterResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getPostApiAuthLoginMockHandler = (
+	overrideResponse?:
+		| TokenResponse
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<TokenResponse> | TokenResponse)
+) => {
+	return http.post('*/api/auth/login', async info => {
+		await delay(1000);
 
-export const getPostApiAuthLoginMockHandler = (overrideResponse?: TokenResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<TokenResponse> | TokenResponse)) => {
-  return http.post('*/api/auth/login', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAuthLoginResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getPostApiAuthLoginResponseMock()
+			),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
 
-export const getPostApiAuthRefreshMockHandler = (overrideResponse?: PostApiAuthRefresh200 | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<PostApiAuthRefresh200> | PostApiAuthRefresh200)) => {
-  return http.post('*/api/auth/refresh', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAuthRefreshResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getPostApiAuthRefreshMockHandler = (
+	overrideResponse?:
+		| PostApiAuthRefresh200
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<PostApiAuthRefresh200> | PostApiAuthRefresh200)
+) => {
+	return http.post('*/api/auth/refresh', async info => {
+		await delay(1000);
 
-export const getPostApiAuthLogoutMockHandler = (overrideResponse?: LogoutResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<LogoutResponse> | LogoutResponse)) => {
-  return http.post('*/api/auth/logout', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAuthLogoutResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getPostApiAuthRefreshResponseMock()
+			),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
 
-export const getPostApiAuthForgotPasswordMockHandler = (overrideResponse?: ForgotPasswordResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ForgotPasswordResponse> | ForgotPasswordResponse)) => {
-  return http.post('*/api/auth/forgot-password', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAuthForgotPasswordResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getPostApiAuthLogoutMockHandler = (
+	overrideResponse?:
+		| LogoutResponse
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<LogoutResponse> | LogoutResponse)
+) => {
+	return http.post('*/api/auth/logout', async info => {
+		await delay(1000);
 
-export const getPostApiAuthResetPasswordMockHandler = (overrideResponse?: ResetPasswordResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ResetPasswordResponse> | ResetPasswordResponse)) => {
-  return http.post('*/api/auth/reset-password', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAuthResetPasswordResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getPostApiAuthLogoutResponseMock()
+			),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
 
-export const getGetApiMeMockHandler = (overrideResponse?: MeResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MeResponse> | MeResponse)) => {
-  return http.get('*/api/me', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetApiMeResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  })
-}
+export const getPostApiAuthForgotPasswordMockHandler = (
+	overrideResponse?:
+		| ForgotPasswordResponse
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<ForgotPasswordResponse> | ForgotPasswordResponse)
+) => {
+	return http.post('*/api/auth/forgot-password', async info => {
+		await delay(1000);
+
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getPostApiAuthForgotPasswordResponseMock()
+			),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
+
+export const getPostApiAuthResetPasswordMockHandler = (
+	overrideResponse?:
+		| ResetPasswordResponse
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<ResetPasswordResponse> | ResetPasswordResponse)
+) => {
+	return http.post('*/api/auth/reset-password', async info => {
+		await delay(1000);
+
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getPostApiAuthResetPasswordResponseMock()
+			),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
+
+export const getGetApiMeMockHandler = (
+	overrideResponse?:
+		| MeResponse
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<MeResponse> | MeResponse)
+) => {
+	return http.get('*/api/me', async info => {
+		await delay(1000);
+
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getGetApiMeResponseMock()
+			),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
+	});
+};
 export const getLoginAPIMock = () => [
-  getPostApiAuthRegisterMockHandler(),
-  getPostApiAuthLoginMockHandler(),
-  getPostApiAuthRefreshMockHandler(),
-  getPostApiAuthLogoutMockHandler(),
-  getPostApiAuthForgotPasswordMockHandler(),
-  getPostApiAuthResetPasswordMockHandler(),
-  getGetApiMeMockHandler()
-]
+	getPostApiAuthRegisterMockHandler(),
+	getPostApiAuthLoginMockHandler(),
+	getPostApiAuthRefreshMockHandler(),
+	getPostApiAuthLogoutMockHandler(),
+	getPostApiAuthForgotPasswordMockHandler(),
+	getPostApiAuthResetPasswordMockHandler(),
+	getGetApiMeMockHandler()
+];

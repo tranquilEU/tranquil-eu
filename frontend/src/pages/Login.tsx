@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
 import { Paragraph } from '@/shared/components/Paragraph';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -10,12 +14,10 @@ import {
 	CardTitle
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
-import { ROUTES } from '@/shared/constants';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { usePostApiAuthLogin } from '../shared/api/client';
+import { ROUTES } from '@/shared/constants';
+
+import { usePostApiAuthLogin } from '@/shared/api/client';
 
 const Login = () => {
 	const navigate = useNavigate();

@@ -1,10 +1,11 @@
-import { Heading } from '@/shared/components/Heading';
-import { Button } from '@/shared/components/ui/button';
-import { ROUTES } from '@/shared/constants';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { LanguageSwitcher } from '../shared/components/LanguageSwitcher';
+import { Heading } from '@/shared/components/Heading';
+import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
+import { Button } from '@/shared/components/ui/button';
+
+import { ROUTES } from '@/shared/constants';
 
 const Home: React.FC = () => {
 	const { t } = useTranslation('translation');

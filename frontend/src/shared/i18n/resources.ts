@@ -1,5 +1,5 @@
+import en from '@public/locales/en/translation.json';
 import hr from '@public/locales/hr/translation.json';
-import en from 'public/locales/en/translation.json';
 
 export const defaultNS = 'translation';
 
