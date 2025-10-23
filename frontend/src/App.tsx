@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import Navigation from '@/shared/components/Navigation';
 import ProtectedRoute from '@/shared/components/ProtectedRoute';
 
 import { ROUTES } from '@/shared/constants';
@@ -12,13 +13,21 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
+const Projects = lazy(() => import('./pages/Projects'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+
 function App() {
 	return (
 		<BrowserRouter>
+			<Navigation />
 			<Routes>
 				<Route path={ROUTES.Home} element={<Home />} />
 				<Route path={ROUTES.Login} element={<Login />} />
 				<Route path={ROUTES.SignUp} element={<SignUp />} />
+				<Route path={ROUTES.Projects} element={<Projects />} />
+				<Route path={ROUTES.About} element={<About />} />
+				<Route path={ROUTES.Contact} element={<Contact />} />
 
 				<Route path={ROUTES.ResetPasswordLink} element={<ResetPassword />} />
 				<Route path={ROUTES.ForgotPassword} element={<ForgotPassword />} />

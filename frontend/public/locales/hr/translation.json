@@ -1,47 +1,52 @@
 {
-  "common": {
-    "email": "E-pošta",
-    "password": "Lozinka",
-    "login": "Prijava",
-    "signUp": "Registracija",
-    "emailPlaceholder": "ivan.horvat@eposta.hr",
-    "passwordPlaceholder": "********"
-  },
-  "login": {
-    "submitButton": "Prijava",
-    "loggingIn": "Prijava...",
-    "loginFailed": "Prijava nije uspjela",
-    "title": "Prijava na svoj račun",
-    "description": "Unesite svoju e-poštu da biste se prijavili na svoj račun",
-    "forgotPassword": "Zaboravili ste lozinku?"
-  },
-  "signUp": {
-    "submitButton": "Registracija",
-    "signingUp": "Registracija...",
-    "signUpFailed": "Registracija nije uspjela",
-    "confirmPassword": "Potvrdi lozinku",
-    "passwordMismatch": "Lozinke se ne podudaraju",
-    "title": "Kreirajte novi račun",
-    "alreadyHaveAccount": "Već imate račun? Prijava",
-    "description": "Unesite podatke ispod da biste se registrirali",
-    "registrationSuccessful": "Registracija uspjela"
-  },
-  "forgotPassword": {
-    "title": "Zaboravili ste lozinku?",
-    "description": "Unesite svoju e-poštu u nastavku i poslat ćemo vam poveznicu za resetiranje lozinke.",
-    "backToLogin": "Povratak na prijavu",
-    "emailSent": "Ako vaša e-pošta postoji, poslana je poveznica za resetiranje.",
-    "errorResponse": "Greška prilikom slanja poveznice za resetiranje.",
-    "submitButton": "Pošaljite poveznicu za resetiranje"
-  },
-  "resetPassword": {
-    "title": "Resetirajte svoju lozinku",
-    "description": "Unesite novu lozinku u nastavku da biste resetirali svoju lozinku.",
-    "backToLogin": "Povratak na prijavu",
-    "success": "Lozinka je uspješno resetirana.",
-    "errorResponse": "Greška prilikom resetiranja lozinke.",
-    "confirmPassword": "Potvrdi lozinku",
-    "passwordMismatch": "Lozinke se ne podudaraju.",
-    "submitButton": "Resetiraj lozinku"
-  }
+	"common": {
+		"projects": "Projekti",
+		"about": "O meni",
+		"contact": "Kontakt",
+		"dashboard": "Pregled",
+		"email": "E-pošta",
+		"password": "Lozinka",
+		"login": "Prijava",
+		"signUp": "Registracija",
+		"emailPlaceholder": "ivan.horvat@eposta.hr",
+		"passwordPlaceholder": "********",
+		"selectLanguage": "Odaberite jezik"
+	},
+	"login": {
+		"submitButton": "Prijava",
+		"loggingIn": "Prijava...",
+		"loginFailed": "Prijava nije uspjela",
+		"title": "Prijava na svoj račun",
+		"description": "Unesite svoju e-poštu da biste se prijavili na svoj račun",
+		"forgotPassword": "Zaboravili ste lozinku?"
+	},
+	"signUp": {
+		"submitButton": "Registracija",
+		"signingUp": "Registracija...",
+		"signUpFailed": "Registracija nije uspjela",
+		"confirmPassword": "Potvrdi lozinku",
+		"passwordMismatch": "Lozinke se ne podudaraju",
+		"title": "Kreirajte novi račun",
+		"alreadyHaveAccount": "Već imate račun? Prijava",
+		"description": "Unesite podatke ispod da biste se registrirali",
+		"registrationSuccessful": "Registracija uspjela"
+	},
+	"forgotPassword": {
+		"title": "Zaboravili ste lozinku?",
+		"description": "Unesite svoju e-poštu u nastavku i poslat ćemo vam poveznicu za resetiranje lozinke.",
+		"backToLogin": "Povratak na prijavu",
+		"emailSent": "Ako vaša e-pošta postoji, poslana je poveznica za resetiranje.",
+		"errorResponse": "Greška prilikom slanja poveznice za resetiranje.",
+		"submitButton": "Pošaljite poveznicu za resetiranje"
+	},
+	"resetPassword": {
+		"title": "Resetirajte svoju lozinku",
+		"description": "Unesite novu lozinku u nastavku da biste resetirali svoju lozinku.",
+		"backToLogin": "Povratak na prijavu",
+		"success": "Lozinka je uspješno resetirana.",
+		"errorResponse": "Greška prilikom resetiranja lozinke.",
+		"confirmPassword": "Potvrdi lozinku",
+		"passwordMismatch": "Lozinke se ne podudaraju.",
+		"submitButton": "Resetiraj lozinku"
+	}
 }
