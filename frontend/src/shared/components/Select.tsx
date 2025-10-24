@@ -16,22 +16,33 @@ type SelectProps<T> = {
 	onChange: (value: T) => void;
 	className?: string;
 	placeholder?: string;
+	defaultValue?: T; // 👈 add this
 };
 
 export const Select = <T extends string | number>({
 	options,
 	onChange,
 	placeholder,
-	className
+	className,
+	defaultValue
 }: SelectProps<T>) => {
 	return (
-		<SelectComponent onValueChange={onChange as (value: string) => void}>
-			<SelectTrigger className={className}>
+		<SelectComponent
+			defaultValue={defaultValue ? String(defaultValue) : undefined} // 👈 set initial value
+			onValueChange={onChange as (value: string) => void}
+		>
+			<SelectTrigger
+				className={`cursor-pointer bg-amber-50 ${className ?? ''}`}
+			>
 				<SelectValue placeholder={placeholder} />
 			</SelectTrigger>
 			<SelectContent>
 				{options.map(option => (
-					<SelectItem key={String(option.value)} value={String(option.value)}>
+					<SelectItem
+						key={String(option.value)}
+						value={String(option.value)}
+						className="cursor-pointer"
+					>
 						{option.label}
 					</SelectItem>
 				))}

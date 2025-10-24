@@ -12,7 +12,7 @@ const SignUp = lazy(() => import('./pages/SignUp'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-
+const Skills = lazy(() => import('./pages/Skills'));
 const Projects = lazy(() => import('./pages/Projects'));
 const About = lazy(() => import('./pages/About'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -25,6 +25,7 @@ function App() {
 				<Route path={ROUTES.Home} element={<Home />} />
 				<Route path={ROUTES.Login} element={<Login />} />
 				<Route path={ROUTES.SignUp} element={<SignUp />} />
+				<Route path={ROUTES.Skills} element={<Skills />} />
 				<Route path={ROUTES.Projects} element={<Projects />} />
 				<Route path={ROUTES.About} element={<About />} />
 				<Route path={ROUTES.Contact} element={<Contact />} />
