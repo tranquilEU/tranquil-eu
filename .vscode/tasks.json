@@ -2,9 +2,23 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Install Frontend Dependencies",
+      "type": "shell",
+      "command": "pnpm install",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "label": "$(package) Install Frontend Deps",
+          "detail": "Installing Frontend Dependencies"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
       "label": "Start Frontend",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "pnpm run dev",
       "options": {
         "cwd": "${workspaceFolder}/frontend",
         "statusbar": {
@@ -73,7 +87,7 @@
     {
       "label": "Lint",
       "type": "shell",
-      "command": "npm run lint",
+      "command": "pnpm run lint",
       "options": {
         "cwd": "${workspaceFolder}/frontend",
         "statusbar": {
@@ -87,7 +101,7 @@
     {
       "label": "Type-check",
       "type": "shell",
-      "command": "npm run type-check",
+      "command": "pnpm run type-check",
       "options": {
         "cwd": "${workspaceFolder}/frontend",
         "statusbar": {
@@ -101,7 +115,7 @@
     {
       "label": "Build",
       "type": "shell",
-      "command": "npm run build",
+      "command": "pnpm run build",
       "options": {
         "cwd": "${workspaceFolder}/frontend",
         "statusbar": {
